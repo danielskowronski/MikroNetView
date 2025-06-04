@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  mnv:
+    build: .
+    environment:
+      - MNV_HOST=${MNV_HOST}
+      - MNV_USER=${MNV_USER}
+      - MNV_PASS=${MNV_PASS}
+    ports:
+      - "9001:9001"
