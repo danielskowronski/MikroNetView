@@ -5,6 +5,13 @@ from RegInfo import RegInfo
 import json
 import re
 
+
+from functools import lru_cache
+_global_oui = OuiLookup()
+@lru_cache(maxsize=1024)
+def _lookup_oui_cached(mac: str) -> dict:
+    return _global_oui.query(mac)[0]
+
 def split_time_parts(s):
   return re.findall(r'\d+[wdhms]', s)
 def time_fmt(s):
@@ -16,6 +23,7 @@ def time_fmt(s):
   else:
     return "______"
 
+LeaseInfoProps = 'status,comment,id,address,active-address,active-mac-address,mac-address,host-name,dynamic,last-seen'
 # FIXME: this is direct import of prototype, it must be improved
 @dataclass
 class LeaseInfo:
@@ -65,7 +73,7 @@ class LeaseInfo:
             self.name = rosl.get("host-name", "?????")
 
         self.id = rosl.get("id", "???")
-        oui = OuiLookup().query(self.mac)[0]
+        oui = _lookup_oui_cached(self.mac)
         self.macFmt = list(oui)[0]
         self.oui = oui.get(self.mac, "None")
         if (
