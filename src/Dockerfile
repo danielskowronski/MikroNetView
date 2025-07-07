@@ -8,10 +8,10 @@ RUN addgroup --system webgroup && adduser --system webuser --ingroup webgroup
 
 WORKDIR /app
 
-COPY requirements.txt /app/requirements.txt
+COPY app/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app
+COPY app/ /app
 RUN chown -R webuser:webgroup /app
 USER webuser
 

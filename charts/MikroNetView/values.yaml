@@ -1,0 +1,21 @@
+---
+image:
+  repository: ghcr.io/danielskowronski/mikronetview
+  tag: "v0.2.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 9001
+ingress:
+  enabled: false
+  hosts:
+    - host: mikronetview.local
+      paths:
+        - /
+  tls:
+    - hosts:
+        - mikronetview.local
+      secretName: mikronetview-tls
+
+existingSecretName: mnv-secret

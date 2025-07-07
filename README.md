@@ -30,6 +30,26 @@ IP Pool *should* have [metadata](https://github.com/skowronski-cloud/HomeOps/blo
 
 ## Running
 
+For now, only web-app mode is supported. Either via locally `python3 app.py` or Docker-Compose or via [Docker image](https://github.com/danielskowronski/MikroNetView/pkgs/container/mikronetview) or via [Helm Chart](./charts/MikroNetView/Chart.yaml)
+
+### Configuration - default
+
+Config file pointed by env variable `MNV_CONF` defaulting to `/app/config/config.yaml`:
+
+```yaml
+---
+server:
+  host: "0.0.0.0"
+  port: 9001
+  debug: true
+mikrotik:
+  host: "192.168.0.1"
+  user: "admin"
+  password: "admin"
+```
+
+### Configuration - fallback 
+
 Device is targeted by setting following env vars:
 
 ```bash
@@ -37,5 +57,3 @@ export MNV_HOST='192.168.0.1'
 export MNV_USER='admin'
 export MNV_PASS='admin'
 ```
-
-For now, only web-app mode is supported. Either via `python3 app.py` or Docker-Compose.

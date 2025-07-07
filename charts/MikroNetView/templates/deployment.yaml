@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: mnv
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: MNV_CONF
+          value: /app/config/config.yaml
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        volumeMounts:
+        - name: mnv-conf
+          mountPath: /app/config/
+      volumes:
+      - name: mnv-conf
+        secret:
+          secretName: {{ .Values.existingSecretName }}
+      # TODO: healthcheck, readinesscheck
