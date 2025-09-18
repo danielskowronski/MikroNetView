@@ -7,23 +7,32 @@ import re
 
 
 from functools import lru_cache
+
 _global_oui = OuiLookup()
+
+
 @lru_cache(maxsize=1024)
 def _lookup_oui_cached(mac: str) -> dict:
     return _global_oui.query(mac)[0]
 
-def split_time_parts(s):
-  return re.findall(r'\d+[wdhms]', s)
-def time_fmt(s):
-  stp=split_time_parts(s)
-  if len(stp)>=2:
-    return stp[0].rjust(3,"0")+""+stp[1].rjust(3,"0")
-  elif len(stp)==1:
-    return stp[0].rjust(6,"_")
-  else:
-    return "______"
 
-LeaseInfoProps = 'status,comment,id,address,active-address,active-mac-address,mac-address,host-name,dynamic,last-seen'
+def split_time_parts(s):
+    return re.findall(r"\d+[wdhms]", s)
+
+
+def time_fmt(s):
+    stp = split_time_parts(s)
+    if len(stp) >= 2:
+        return stp[0].rjust(3, "0") + "" + stp[1].rjust(3, "0")
+    elif len(stp) == 1:
+        return stp[0].rjust(6, "_")
+    else:
+        return "______"
+
+
+LeaseInfoProps = "status,comment,id,address,active-address,active-mac-address,mac-address,host-name,dynamic,last-seen"
+
+
 # FIXME: this is direct import of prototype, it must be improved
 @dataclass
 class LeaseInfo:
@@ -44,7 +53,7 @@ class LeaseInfo:
     connection: str
     isWireless: bool
 
-    def addWirelessInfo(self, reginfo: RegInfo|None):
+    def addWirelessInfo(self, reginfo: RegInfo | None):
         self.reginfo = reginfo
         if reginfo:
             self.isWireless = True
@@ -78,8 +87,10 @@ class LeaseInfo:
         self.oui = oui.get(self.mac, "None")
         if (
             (self.mac[1] in ("2", "6", "A", "E"))
-            and self.mac[0:8] != "D0:D0:D0" # non-Apple, personal prefix
-            and self.mac[0:8] != "EE:EC:00" # non-Apple, personal prefix
+            and self.mac[0:8] != "D0:D0:D0"  # non-Apple, personal prefix
+            and self.mac[0:8] != "EE:EC:00"  # non-Apple, personal prefix
+            and self.mac[0:8] != "F2:F2:F2"  # non-Apple, personal prefix
+            and self.mac[0:8] != "E2:D2:5E"  # non-Apple, random OrangePi
         ):
             self.locallyAdministered = True
             self.oui = "Locally Administered"
@@ -107,7 +118,7 @@ class LeaseInfo:
             self.macClass += "locallyAdministered"
 
         self.ip_shared = (
-            self.ip.exploded.split(".")[0] + "." + self.ip.exploded.split(".")[0] + "."
+            self.ip.exploded.split(".")[0] + "." + self.ip.exploded.split(".")[1] + "."
         )
         self.ip_unique = (
             self.ip.exploded.split(".")[2] + "." + self.ip.exploded.split(".")[3]

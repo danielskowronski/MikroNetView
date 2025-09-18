@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
-RegInfoProps = 'id,mac-address,interface,ssid,uptime,lastActivity,signal,band,rx-rate,tx-rate,rx-bits-per-second,tx-bits-per-second'
+RegInfoProps = "id,mac-address,interface,ssid,uptime,lastActivity,signal,band,rx-rate,tx-rate,rx-bits-per-second,tx-bits-per-second"
+
+
 # FIXME: this is direct import of prototype, it must be improved
 @dataclass
 class RegInfo:

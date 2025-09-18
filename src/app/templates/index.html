@@ -1,57 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Ubuntu+Condensed&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Ubuntu+Condensed&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+    rel="stylesheet" />
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 
+  <title>MikroNetView</title>
+  <style>
+    html,
+    body {
+      font-family: 'Ubuntu Mono', monospace;
+    }
 
-    <title>MikroNetView</title>
-    <style>
-      html, body {
-        font-family: 'Ubuntu Mono', monospace;
-      }
-      .details, .status, .ip_shared {
-        font-family: 'Ubuntu Condensed', sans-serif;
-      }
-      .net, .name, .ip_unique, .ap, .band, .connection, .signal {
-        font-weight: bold;
-      }
-      .locallyAdministered, .locallyAdministered a {
-        background-color: black;
-        color: red !important;
-      }
-      .dynamic .ip {
-        background-color: red;
-      }
-      .mac a { color: black; }
+    .details,
+    .status,
+    .ip_shared {
+      font-family: 'Ubuntu Condensed', sans-serif;
+    }
 
-      /* https://htmlcolorcodes.com */
-      .net_d { background-color: #5DADE2;}
-      .net_m { background-color: #A569BD;}
-      .net_n { background-color: #F9E79F;}
-      .net_f { background-color: #5D6D7E;}
-      .net_g { background-color: #E74C3C;}
-      .net_o { background-color: #58D68D;}
-      .net_p { background-color: #239B56;}
-      .net_s { background-color: #48C9B0;}
-      .net_l { background-color: #1F618D;}
-      .net_y { background-color: #AED6F1;}
+    .net,
+    .name,
+    .ip_unique,
+    .ap,
+    .band,
+    .connection,
+    .signal {
+      font-weight: bold;
+    }
 
-      .name {white-space: nowrap;}
+    .locallyAdministered,
+    .locallyAdministered a {
+      background-color: black;
+      color: red !important;
+    }
 
-      table, td, th {
-  border-collapse: collapse;
-  border: 1px solid black;
-}
-td{padding: 2px;}
+    .dynamic .ip {
+      background-color: red;
+    }
 
-/*.status_bound .status { background-color: #58D68D;}
-.status_waiting .status { background-color: #2C3E50; */color: white;}
-    </style>
+    .mac a {
+      color: black;
+    }
+
+    /* https://htmlcolorcodes.com */
+    .net_d {
+      background-color: #5DADE2;
+    }
+
+    .net_m {
+      background-color: #A569BD;
+    }
+
+    .net_n {
+      background-color: #F9E79F;
+    }
+
+    .net_f {
+      background-color: #5D6D7E;
+    }
+
+    .net_g {
+      background-color: #E74C3C;
+    }
+
+    .net_o {
+      background-color: #58D68D;
+    }
+
+    .net_p {
+      background-color: #239B56;
+    }
+
+    .net_s {
+      background-color: #48C9B0;
+    }
+
+    .net_l {
+      background-color: #FB64B6;
+    }
+
+    .net_y {
+      background-color: #42D3F2;
+    }
+
+    .net_i {
+      background-color: #34A6F4;
+    }
+
+    .net_t {
+      background-color: #FFDF20;
+    }
+
+    .name {
+      white-space: nowrap;
+    }
+
+    /* hide test hosts that are not in use */
+    .net_t.status_waiting {
+      display: none;
+    }
+
+    table,
+    td,
+    th {
+      border-collapse: collapse;
+      border: 1px solid black;
+    }
+
+    td {
+      padding: 2px;
+    }
+
+  </style>
 </head>
+
 <body>
   <h1>MikroNetView</h1>
   <table class="leases">
@@ -73,7 +141,9 @@ td{padding: 2px;}
       <tr class="lease net_{{ lease.net }} status_{{ lease.status }} {{ lease.extraClasses }}">
         <td class="net">{{ lease.net }}</td>
         <td class="name">{{ lease.name }}</td>
-        <td class="ip" data-value="{{ self.ip }}"><span class="ip_shared">{{ lease.ip_shared }}</span><wbr><span class="ip_unique">{{ lease.ip_unique }}</span></td>
+        <td class="ip" data-value="{{ lease.ip }}" onclick="clipboard('{{ lease.ip }}')">
+          <span class="ip_shared">{{ lease.ip_shared }}</span><wbr /><span class="ip_unique">{{ lease.ip_unique }}</span>
+        </td>
         {% if lease.isWireless %}
         <td class="connection ap">{{ lease.reginfo.interface[0] }}</td>
         <td class="connection band">{{ lease.reginfo.getBandInfo() }}</td>
@@ -84,14 +154,35 @@ td{padding: 2px;}
         <td class="connection band">___</td>
         <td class="connection signal">__</td>
         {% endif %}
-        <td class="mac {{ lease.macClass }}" data-value="{{ self.mac }}"><a href="https://maclookup.app/macaddress/{{ lease.macFmt[0:6] }}" title="{{ lease.oui }}">{{ lease.macFmt }}</a></td>
+        <td class="mac {{ lease.macClass }}" data-value="{{ lease.mac }}" {% if lease.net !='g' %}onclick="clipboard('{{ lease.mac }}')"{%endif %}>
+          {% if lease.net == 'g' %}<a href="https://maclookup.app/macaddress/{{ lease.macFmt[0:6] }}" title="{{ lease.oui }}">{%endif %}{{ lease.macFmt }}{% if lease.net == 'g' %}</a>{%endif %}
+        </td>
         <td class="lastSeen">{{ lease.lastSeen }}</td>
         <td class="details">{{ lease.details }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  <script>
+    function copy(that) {
+      var inp = document.createElement("input");
+      document.body.appendChild(inp);
+      inp.value = that.textContent;
+      inp.select();
+      document.execCommand("copy", false);
+      inp.remove();
+    }
+    function clipboard(value) {
+      var inp = document.createElement("input");
+      document.body.appendChild(inp);
+      inp.value = value;
+      inp.select();
+      document.execCommand("copy", false);
+      inp.remove();
+    }
+  </script>
 </body>
+
 </html>
 <!-- FIXME: this is direct import of prototype, it must be improved -->
 <!-- FIXME: add storable table -->
