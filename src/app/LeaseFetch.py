@@ -2,6 +2,7 @@ from LeaseInfo import LeaseInfo, LeaseInfoProps
 from RegInfo import RegInfo, RegInfoProps
 import routeros_api
 import time
+from collections import defaultdict
 
 _connection = None
 
@@ -41,6 +42,10 @@ def dumbFetchLeases(host: str, user: str, password: str) -> list[LeaseInfo]:
             print(f"Error processing reginfo: {e}")
             continue
 
+    reginfos_by_mac = defaultdict(list)
+    for reginfo in reginfos:
+        reginfos_by_mac[reginfo.mac].append(reginfo)
+
     start_time = time.time()
     leases_raw = api.get_resource("/ip/dhcp-server/lease").call(
         "print", {".proplist": LeaseInfoProps}
@@ -52,9 +57,9 @@ def dumbFetchLeases(host: str, user: str, password: str) -> list[LeaseInfo]:
     for lease in leases_raw:
         try:
             mylease = LeaseInfo(lease)
-            reginfos_matching = [ri for ri in reginfos if ri.mac == mylease.mac]
-            if len(reginfos_matching) == 1:
-                mylease.addWirelessInfo(reginfos_matching[0])
+            matched_reginfos = reginfos_by_mac.get(mylease.mac)
+            if matched_reginfos and len(matched_reginfos) == 1:
+                mylease.addWirelessInfo(matched_reginfos[0])
             else:
                 mylease.addWirelessInfo(None)
 

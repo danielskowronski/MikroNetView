@@ -117,12 +117,9 @@ class LeaseInfo:
         if self.locallyAdministered:
             self.macClass += "locallyAdministered"
 
-        self.ip_shared = (
-            self.ip.exploded.split(".")[0] + "." + self.ip.exploded.split(".")[1] + "."
-        )
-        self.ip_unique = (
-            self.ip.exploded.split(".")[2] + "." + self.ip.exploded.split(".")[3]
-        )
+        ip_octets = self.ip.exploded.split(".")
+        self.ip_shared = ip_octets[0] + "." + ip_octets[1] + "."
+        self.ip_unique = ip_octets[2] + "." + ip_octets[3]
 
         self.connection = "----"
 
